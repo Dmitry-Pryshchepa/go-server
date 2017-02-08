@@ -1,0 +1,4 @@
+ Run this to extract the data to a file:
+ ab -n 5000 -c 1000 -g out.dat http://127.0.0.1:9000/
+ Run this to draw a plot:
+ gnuplot "gnuplot-script"
