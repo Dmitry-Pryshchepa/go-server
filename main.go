@@ -5,6 +5,8 @@ import (
 	"log"
 	"net/http"
 	"time"
+	"./routes"
+	"./templates"
 )
 
 func logger(h http.Handler) http.Handler {
@@ -14,15 +16,22 @@ func logger(h http.Handler) http.Handler {
 	})
 }
 
+func templateHandler(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		h.ServeHTTP(w, r)
+	})
+}
+
+
 func setRoutes(h *http.ServeMux) {
 
-	h.HandleFunc("/foo", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, "Hello, you hit foo!")
-	})
+	h.HandleFunc("/foo", routes.Foo)
 
-	h.HandleFunc("/bar", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, "Hello, you hit bar!")
-	})
+	h.HandleFunc("/bar", routes.Bar)
+
+	h.Handle("/main", &templates.TemplateHandler{Filename: "main.html"})
+
+	h.Handle("/app", &templates.TemplateHandler{Filename: "app.html"})
 
 	h.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(404)
@@ -33,7 +42,6 @@ func setRoutes(h *http.ServeMux) {
 func main() {
 
 	h := http.NewServeMux()
-
 	setRoutes(h)
 	l:= logger(h)
 
